@@ -59,9 +59,9 @@ jobs:
 
       - name: Check whether we should publish a toot
         id: toot-exists
-          uses: andstor/file-existence-action@v2
-          with:
-            files: "toot.txt"
+        uses: andstor/file-existence-action@v2
+        with:
+          files: "toot.txt"
 
       - name: Read generated update text
         id: toot-body
