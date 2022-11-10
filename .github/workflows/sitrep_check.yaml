@@ -9,7 +9,7 @@ on:
 name: "Uganda MoH Sitrep Check"
 
 jobs:
-  china-subnational:
+  scrape-who-afro-data:
     runs-on: ubuntu-20.04
 
     env:
