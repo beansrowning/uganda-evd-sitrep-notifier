@@ -100,6 +100,6 @@ if (data_changed) {
       pull(url)
   }
 
-  new_sitrep_str <- pluralize("As of {time_stamp}, {n_new_sitreps} new #Uganda #Ebola Situation Report{?s} {?was/were} posted on the WHO AFRO (@WHOAFRO) Website. The latest one is {latest_sitrep_name}, which you can find here: {latest_sitrep_url}.")
+  new_sitrep_str <- pluralize("As of {time_stamp}, {n_new_sitreps} new #Uganda #Ebola Situation Report{?s} {?was/were} posted on the WHO AFRO (@WHOAFRO) Website. The latest one is {latest_sitrep_name}, which you can find here: {latest_sitrep_url}. #epiverse")
   cat(new_sitrep_str, file = "toot.txt")
 }
