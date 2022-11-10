@@ -842,29 +842,11 @@ local({
   
   renv_json_read <- function(file = NULL, text = NULL) {
   
-    jlerr <- NULL
-  
     # if jsonlite is loaded, use that instead
-    if ("jsonlite" %in% loadedNamespaces()) {
-  
-      json <- catch(renv_json_read_jsonlite(file, text))
-      if (!inherits(json, "error"))
-        return(json)
-  
-      jlerr <- json
-  
-    }
-  
-    # otherwise, fall back to the default JSON reader
-    json <- catch(renv_json_read_default(file, text))
-    if (!inherits(json, "error"))
-      return(json)
-  
-    # report an error
-    if (!is.null(jlerr))
-      stop(jlerr)
+    if ("jsonlite" %in% loadedNamespaces())
+      renv_json_read_jsonlite(file, text)
     else
-      stop(json)
+      renv_json_read_default(file, text)
   
   }
   
