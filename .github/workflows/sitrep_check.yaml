@@ -50,13 +50,12 @@ jobs:
           format: 'YYYY-MM-DD HH:mm'
 
       - name: Commit Changes
-            if: success()
-            run: |
-              git config --local user.name "$GITHUB_ACTOR"
-              git config --local user.email "$GITHUB_ACTOR@users.noreply.github.com"
-              git add data/sitreps.csv
-              git commit -am '${{ steps.time.outputs.time }} - SitReps Updated' || echo "No changes to commit"
-              git push origin || echo "No changes to commit"
+        run: |
+          git config --local user.name "$GITHUB_ACTOR"
+          git config --local user.email "$GITHUB_ACTOR@users.noreply.github.com"
+          git add data/sitreps.csv
+          git commit -am '${{ steps.time.outputs.time }} - SitReps Updated' || echo "No changes to commit"
+          git push origin || echo "No changes to commit"
 
       - name: Check whether we should publish a toot
         id: toot-exists
