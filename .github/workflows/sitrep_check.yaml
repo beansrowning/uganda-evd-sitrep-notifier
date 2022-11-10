@@ -1,0 +1,81 @@
+# For help debugging build failures open an issue on the RStudio community with the 'github-actions' tag.
+# https://community.rstudio.com/new-topic?category=Package%20development&tags=github-actions
+on:
+  workflow_dispatch:
+  schedule:
+    # Run every ten minutes
+    - cron: '10 * * * *'
+
+name: "Uganda MoH Sitrep Check"
+
+jobs:
+  china-subnational:
+    runs-on: ubuntu-20.04
+
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: "master"
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: 'release'
+          use-public-rspm: true
+
+      - name: Install System Dependencies
+        run: |
+          sudo apt-get install libcurl4-openssl-dev libudunits2-dev
+          sudo R CMD javareconf
+        shell: bash
+
+      - uses: r-lib/actions/setup-renv@v2
+        with:
+          cache-version: 2
+
+      - name: Run Scrape
+        id: scrape
+        env:
+          _R_CHECK_CRAN_INCOMING_REMOTE_: false
+        run: |
+          source("R/scrape.R")
+        shell: Rscript {0}
+      - name: Get Time
+        id: time
+        uses: nanzm/get-time-action@v1.1
+        with:
+          timeZone: -5
+          format: 'YYYY-MM-DD HH:mm'
+
+      - name: Commit Changes
+            if: success()
+            run: |
+              git config --local user.name "$GITHUB_ACTOR"
+              git config --local user.email "$GITHUB_ACTOR@users.noreply.github.com"
+              git add data/sitreps.csv
+              git commit -am '${{ steps.time.outputs.time }} - SitReps Updated' || echo "No changes to commit"
+              git push origin || echo "No changes to commit"
+
+      - name: Check whether we should publish a toot
+        id: toot-exists
+          uses: andstor/file-existence-action@v2
+          with:
+            files: "toot.txt"
+
+      - name: Read generated update text
+        id: toot-body
+        if: steps.toot-exists.outputs.files_exists == 'true'
+        run: echo "::set-output name=body::$(cat toot.txt)"
+
+      - name: Update the world on Mastodon
+        id: mastodon-post
+        if: steps.toot-exists.outputs.files_exists == 'true'
+        uses: cbrgm/mastodon-github-action@v1.0.0
+        with:
+          message: "${{ steps.toot-body.outputs.body }}"
+          visibility: "public"
+        env:
+          MASTODON_URL: ${{ secrets.MASTODON_URL }} # mas.to
+          MASTODON_ACCESS_TOKEN: ${{ secrets.MASTODON_ACCESS_TOKEN }} # access token

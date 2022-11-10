@@ -76,8 +76,8 @@ data_changed <- n_new_sitreps > 0
 # Combine our new scraped observation with the previous data
 # And if anything changed, signal an update to the pin and alert via email
 
-out_table <- last_data |>
-  bind_rows(sitrep_table)
+out_table <- new_sitreps |>
+  bind_rows(last_data)
 
 # === Write out changes ============================
 if (data_changed) {

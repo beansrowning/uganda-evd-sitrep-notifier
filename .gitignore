@@ -1,5 +1,9 @@
+# Secrets, project files, etc
 .env
 .Renviron
 .RProj
 
+# Data
 data/*
+!data/sitreps.csv
+toot.txt
